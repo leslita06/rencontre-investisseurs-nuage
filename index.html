@@ -1,0 +1,57 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vos besoins d'investisseur</title>
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@600;700&family=Funnel+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+ :root{--vert:#064534;--vert2:#0E6B50;--orange:#E37744;--creme:#FAF7F0;--menthe:#D9EFE5;
+       --peche:#FDE6DD;--encre:#1B2620;--gris:#5A6660}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--creme);color:var(--encre);font-family:'Funnel Sans',system-ui,sans-serif;min-height:100vh}
+ header{background:var(--vert);color:#fff;padding:18px 40px;display:flex;align-items:center;gap:24px}
+ header img{height:54px;background:#fff;border-radius:8px;padding:4px 8px}
+ h1{font-family:Antonio,sans-serif;text-transform:uppercase;font-size:clamp(24px,3vw,42px);margin:0;letter-spacing:.01em}
+ .oeil{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#F4B08F;font-weight:700}
+ .compte{margin-left:auto;font-size:clamp(15px,1.6vw,22px);white-space:nowrap}
+ .compte b{font-family:Antonio,sans-serif;font-size:1.8em}
+ main{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:26px;padding:28px 40px 70px}
+ @media(max-width:1000px){main{grid-template-columns:1fr}}
+ section{background:#fff;border-radius:18px;padding:22px 24px;border:1.5px solid #F1EADB;min-height:340px}
+ h2{font-family:Antonio,sans-serif;text-transform:uppercase;color:var(--vert);font-size:24px;margin:0 0 18px}
+ .nuage{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:baseline;justify-content:center}
+ .m{font-weight:700;line-height:1.1;transition:font-size .6s ease}
+ .m sup{font-size:.45em;color:var(--gris);margin-left:3px}
+ .vide{color:var(--gris);font-size:17px;text-align:center;padding-top:40px}
+ footer{position:fixed;bottom:0;left:0;right:0;padding:10px 40px;font-size:12px;color:#fff;background:var(--vert);
+        display:flex;justify-content:space-between;letter-spacing:.06em}
+</style></head><body>
+<header><img src="logo.png" alt="Ministère de la Transition Numérique et de l'Innovation Technologique">
+ <div><div class="oeil">Rencontre partenaires financiers et investisseurs</div><h1>Vos besoins d'investisseur</h1></div>
+ <div class="compte"><b id="n">0</b> <span id="mot">réponse</span></div></header>
+<main>
+ <section><h2>Le programme qui vous intéresse</h2><div class="nuage" id="programmes"></div></section>
+ <section><h2>L'accompagnement que vous proposez</h2><div class="nuage" id="accompagnement"></div></section>
+ <section><h2>Les limites et axes non couverts</h2><div class="nuage" id="limites"></div></section>
+</main>
+<footer><span>Ministère de la Transition Numérique et de l'Innovation Technologique</span><span>Jeudi 1er octobre 2026</span></footer>
+<script>
+const SRC = "nuage.json";
+const COUL = ["#064534","#E37744","#0E6B50","#C45A2A","#0A5641","#B8612F"];
+function nuage(id, paires){
+  const c = document.getElementById(id);
+  if (!paires.length){ c.innerHTML = '<div class="vide">Scannez le QR code : vos réponses s\'affichent ici, en direct.</div>'; return; }
+  const max = Math.max(...paires.map(p => p[1]));
+  c.innerHTML = paires.map(([k, v], i) => {
+    const t = 20 + (v / max) * 44;
+    return `<span class="m" style="font-size:${t}px;color:${COUL[i % COUL.length]}">${k.replace(/[<>&]/g,"")}${v > 1 ? `<sup>×${v}</sup>` : ""}</span>`;
+  }).join("");
+}
+async function tic(){
+  try{
+    const d = await (await fetch(SRC + "?t=" + Date.now(), {cache:"no-store"})).json();
+    document.getElementById("n").textContent = d.repondants;
+    document.getElementById("mot").textContent = d.repondants > 1 ? "réponses" : "réponse";
+    nuage("programmes", d.programmes); nuage("accompagnement", d.accompagnement); nuage("limites", d.limites);
+  }catch(e){}
+}
+tic(); setInterval(tic, 8000);
+</script></body></html>
